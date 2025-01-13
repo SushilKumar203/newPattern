@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define Task_List 25
+
+typedef struct {
+    char title[30];
+    char description[100];
+    int priority;
+    bool taskStatus;
+} Task;
+
+// Array to hold tasks
+Task tasks[Task_List];
+int i;
+
+// Function to input task details from the user
+void inputTaskData(Task *list, int size) {
+    for (i = 0; i < size; i++) {
+        printf("\nEnter details for task No: %d\n", i + 1);
+
+        printf("Enter the title: ");
+        getchar(); // Consume the leftover newline
+        fgets(list[i].title, sizeof(list[i].title), stdin);
+        list[i].title[strcspn(list[i].title, "\n")] = '\0'; // Remove trailing newline
+
+        printf("Enter the description: ");
+        fgets(list[i].description, sizeof(list[i].description), stdin);
+        list[i].description[strcspn(list[i].description, "\n")] = '\0';
+
+        printf("Enter the priority (higher number means higher priority): ");
+        scanf("%d", &list[i].priority);
+
+        printf("Enter the status (1 for complete, 0 for pending): ");
+        int statusInput;
+        scanf("%d", &statusInput);
+        list[i].taskStatus = (statusInput == 1);
+
+        printf("Task added successfully.\n");
+    }
+}
+
+// Function to display all tasks
+void displayTaskInfo(Task *list, int size) {
+    printf("\nTask List:\n");
+    for (i = 0; i < size; i++) {
+        printf("\nTask %d:\n", i + 1);
+        printf("Title: %s\n", list[i].title);
+        printf("Description: %s\n", list[i].description);
+        printf("Priority: %d\n", list[i].priority);
+        printf("Status: %s\n", list[i].taskStatus ? "Complete" : "Pending");
+    }
+}
+
+// Function to update the status of a task
+void updateTaskStatus(Task *task) {
+    printf("\nUpdating task: %s\n", task->title);
+    printf("Enter new status (1 for complete, 0 for pending): ");
+    int statusInput;
+    scanf("%d", &statusInput);
+    task->taskStatus = (statusInput == 1);
+    printf("Task status updated successfully.\n");
+}
+
+// Recursive function to adjust task priority
+void adjustPriority(Task *task) {
+    if (task->priority <= 1) {
+        printf("Priority is already the lowest (1).\n");
+        return;
+    }
+    task->priority--;
+    printf("Decreasing priority of task: %s, new priority: %d\n", task->title, task->priority);
+    adjustPriority(task);
+}
+
+// Function to load tasks (simulated here as user input, but could read from file)
+void loadTasks(Task *list, int size) {
+    inputTaskData(list, size);
+}
+
+int main() {
+    int userTaskCount;
+
+    // Input the number of tasks
+    printf("Enter the number of tasks you want to add (0 to max %d): ", Task_List);
+    scanf("%d", &userTaskCount);
+
+    if (userTaskCount < 0 || userTaskCount > Task_List) {
+        printf("Invalid number of tasks. Exiting program.\n");
+        return 1;
+    }
+
+    // Load tasks into the array
+    loadTasks(tasks, userTaskCount);
+
+    // Display tasks
+    displayTaskInfo(tasks, userTaskCount);
+
+    // Update a specific task's status
+    int taskIndex;
+    printf("\nEnter the task index to update (1 to %d): ", userTaskCount);
+    scanf("%d", &taskIndex);
+    taskIndex--; // Convert to zero-based index
+
+    if (taskIndex < 0 || taskIndex >= userTaskCount) {
+        printf("Invalid task index. Exiting program.\n");
+        return 1;
+    }
+
+    updateTaskStatus(&tasks[taskIndex]);
+
+    // Adjust priority recursively
+    printf("\nEnter the task index to adjust priority (1 to %d): ", userTaskCount);
+    scanf("%d", &taskIndex);
+    taskIndex--; // Convert to zero-based index
+
+    if (taskIndex < 0 || taskIndex >= userTaskCount) {
+        printf("Invalid task index. Exiting program.\n");
+        return 1;
+    }
+
+    adjustPriority(&tasks[taskIndex]);
+
+    // Display tasks after modifications
+    displayTaskInfo(tasks, userTaskCount);
+
+    return 0;
+}
