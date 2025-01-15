@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+// Structure to store participant information
+struct Participant {
+    char name[50];
+    int id;
+    char organization[50];
+    float registrationFee;
+    bool paymentStatus;
+};
+
+// Array of 50 Participant structures
+struct Participant participants[50];
+
+int i;
+// Function to input participant data
+void inputParticipantData(struct Participant *participants, int size) {
+    for ( i = 0; i < size; i++) {
+        printf("Registration No: %d\n", i + 1);
+
+        printf("Enter Participant Name: ");
+        getchar(); // Clear newline from buffer
+        fgets(participants[i].name, sizeof(participants[i].name), stdin);
+        participants[i].name[strcspn(participants[i].name, "\n")] = '\0';
+
+        printf("Enter Participant ID: ");
+        scanf("%d", &participants[i].id);
+
+        printf("Enter Organization: ");
+        getchar(); // Clear newline from buffer
+        fgets(participants[i].organization, sizeof(participants[i].organization), stdin);
+        participants[i].organization[strcspn(participants[i].organization, "\n")] = '\0';
+
+        printf("Enter Registration Fee: ");
+        scanf("%f", &participants[i].registrationFee);
+
+        participants[i].paymentStatus = false; // Default payment status
+
+        printf("\nData for Registration No %d has been added.\n\n", i + 1);
+    }
+}
+
+// Function to update payment status
+void updatePaymentStatus(struct Participant *participants, int size) {
+    int participantID, status;
+    printf("Enter Participant ID to update payment status: ");
+    scanf("%d", &participantID);
+
+    for (i = 0; i < size; i++) {
+        if (participants[i].id == participantID) {
+            printf("Participant Name: %s\n", participants[i].name);
+            printf("Enter Payment Status (1 for Complete, 0 for Incomplete): ");
+            scanf("%d", &status);
+            participants[i].paymentStatus = (status == 1);
+            printf("Payment status updated successfully.\n");
+            return;
+        }
+    }
+    printf("Participant with ID %d not found.\n", participantID);
+}
+
+// Function to display participant details
+void displayParticipants(struct Participant *participants, int size) {
+    for (i = 0; i < size; i++) {
+        printf("\nRegistration No: %d\n", i + 1);
+        printf("Name: %s\n", participants[i].name);
+        printf("ID: %d\n", participants[i].id);
+        printf("Organization: %s\n", participants[i].organization);
+        printf("Registration Fee: %.2f\n", participants[i].registrationFee);
+        printf("Payment Status: %s\n", participants[i].paymentStatus ? "Complete" : "Incomplete");
+    }
+}
+
+// Recursive function to adjust the registration fee
+void adjustFee(struct Participant *participant) {
+    if (participant->registrationFee > 1000) {
+        participant->registrationFee *= 0.9; // Apply 10% discount
+    } else if (participant->registrationFee < 500) {
+        participant->registrationFee += 50; // Add a flat 50 fee
+    }
+}
+
+int main() {
+    int count;
+
+    printf("Enter the number of participants: ");
+    scanf("%d", &count);
+
+    // Input participant data
+    inputParticipantData(participants, count);
+
+    // Update payment status
+    updatePaymentStatus(participants, count);
+
+    // Adjust fees for all participants
+    for (i = 0; i < count; i++) {
+        adjustFee(&participants[i]);
+    }
+
+    // Display all participants
+    displayParticipants(participants, count);
+
+    return 0;
+}
