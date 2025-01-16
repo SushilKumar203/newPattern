@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define MAX_STUDENTS 20
+
+typedef struct {
+    char name[50];
+    int rollNo;
+    int age ;
+    float marks;
+    char grade;
+    // bool Favourite;
+}Student;
+
+
+
+Student students[MAX_STUDENTS]; //declaring structure 
+int studentCount = 0;
+
+void calculateGrade(Student *students){
+    if(students->marks > 280 && students->marks < 300){ //arrow operator
+    students->grade = 'A';
+    } else {
+        students->grade = 'B';
+    }
+}
+
+void modifyAge(Student *student){
+    // age < 10 and > 30;
+    if(student->age < 10){
+        student->age = 10;
+    } else if(student->age > 30){
+        student->age = 30;
+    }
+}
+
+void inputStudentData(int n){
+    int i, j;
+    float marks;
+
+    for(i = 0 ; i < n ; i++){
+        printf("Enter the name ");
+        //gets and fgets to input from string
+        // fgets(students[i].name , sizeof(students[i].name ), stdin);
+        // students[i].name[strcspn(students[i].name , "\n")] = '\0';
+        gets(students[i].name);
+        printf("Enter the roll No ");
+        scanf("%d", &students[i].rollNo);
+        // while(getchar() != '\n');
+        printf("Enter the age ");
+        scanf("%d", &students[i].age);
+        // while(getchar() != '\n');
+        students[i].marks = 0; // Initialize marks to 0
+        for(j = 0; j < 3; j++){
+            printf("Enter the marks of %d subject ", j+1);
+            scanf("%f", &marks);
+            students[i].marks += marks;
+        }
+            while(getchar() != '\n');
+        calculateGrade(&students[i]); //index 0 array
+        modifyAge(&students[i]);
+        // printf("Are You favourite of the teacher (1 - yes) (0 - No) ");
+        // scanf(" %d", &students[i].Favourite); // Note the space before %d
+        // while(getchar() != '\n'); // To consume the newline character left by scanf
+        studentCount++;
+    }
+}
+
+void displayResults(){
+    int i;
+    for(i = 0; i < studentCount; i++){
+        printf("\nThe name is %s", students[i].name);
+        printf("\nThe Roll No is %d", students[i].rollNo);
+        printf("\nThe age is %d", students[i].age);
+        printf("\nThe total marks are %f", students[i].marks);
+        printf("\nThe grade is %c", students[i].grade);
+        // printf("\nFavourite is %s", students[i].Favourite ? "Yes" : "No");
+    }
+}
+
+
+
+void academicStanding(Student *students, int index) { //index = 1
+    if (index >= studentCount) {
+        return;
+    }
+
+    if (students[index].marks >= 270) {
+        printf("\n%s has Excellent academic standing.", students[index].name);
+    } else if (students[index].marks >= 240) {
+        printf("\n%s has Good academic standing.", students[index].name);
+    } else {
+        printf("\n%s needs Improvement.", students[index].name);
+    }
+
+        academicStanding(students, index + 1);   
+}
+
+int main(){
+    int n;
+    printf("Enter the number of students ");
+    scanf("%d", &n);
+    getchar();
+
+    inputStudentData(n);
+    displayResults();
+    academicStanding(&students[0], 0);
+    return 0;
+}
